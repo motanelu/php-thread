@@ -9,18 +9,22 @@ require_once("ThreadQueue.php");
 
 
 
-// it is the function that will be called several times
+// function is a static method of a class
 
-function parallel_task($arg){
-  echo "task with parameter '$arg' starts\n";
-  sleep( rand(2,5) );	// wait for random seconds
-  echo "task with parameter '$arg' ENDS\n";
+abstract class class1 {
+
+  static function parallel_task($arg){
+    echo "task with parameter '$arg' starts\n";
+    sleep( rand(2,5) );	// wait for random seconds
+    echo "task with parameter '$arg' ENDS\n";
+  }
+
 }
 
 
 
 // we want 3 jobs in parallel instead of the default 2
-$TQ = new ThreadQueue("parallel_task", 3);
+$TQ = new ThreadQueue("class1::parallel_task", 3);
 
 
 // add tasks
