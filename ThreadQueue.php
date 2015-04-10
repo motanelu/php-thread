@@ -70,22 +70,22 @@ class ThreadQueue {
     $this->cleanup();
     
     if( (count($this->threads) < $this->queueSize) && count($this->jobs) ){
-      $this->threads[] = $szal = new zsThread($this->callable);
+      $this->threads[] = $szal = new Thread($this->callable);
       $szal->start( array_shift($this->jobs) );
     }
      
     usleep(ThreadQueue::TICK_DELAY);
-    return $this->size();
+    return $this->queueSize();
   }
 
 
   /**
-   *	returns queue size
+   *	returns queue size with waiting jobs
    *
    *	@return int
    */
    
-  public function size(){
+  public function queueSize(){
     return count($this->jobs);
   }
   
@@ -106,7 +106,7 @@ class ThreadQueue {
    *	@return int	number of removed jobs
    */
   public function flush(){
-    $size = $this->size();
+    $size = $this->queueSize();
     $this->jobs = array();
     return $size;
   }

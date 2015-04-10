@@ -92,7 +92,7 @@ class Thread
      */
     public function __construct( $runnable = null )
     {
-        if(!Thread::isAvailable)throw new Exception("Threads not supported");
+        if(!Thread::isAvailable() )throw new Exception("Threads not supported");
         if ( $runnable !== null ) {
             $this->setRunnable($runnable);
         }
