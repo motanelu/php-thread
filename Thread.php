@@ -34,11 +34,8 @@ class Thread
      * @var array
      */
     private $_errors = array(
-        Thread::FUNCTION_NOT_CALLABLE =>
-            'You must specify a valid function name that can be called '.
-            'from the current scope.',
-        Thread::COULD_NOT_FORK        =>
-            'pcntl_fork() returned a status of -1. No new process was created'
+        Thread::FUNCTION_NOT_CALLABLE => 'You must specify a valid function name that can be called from the current scope.',
+        Thread::COULD_NOT_FORK        => 'pcntl_fork() returned a status of -1. No new process was created'
     );
 
     /**
@@ -55,6 +52,17 @@ class Thread
      * @var integer
      */
     private $_pid;
+    
+    
+    /**
+     * Exits with error
+     *
+     * @return void
+    */
+    
+    private function fatalError($errorCode){
+        throw new Exception( $this->getError($errorCode) );
+    }
 
     /**
      * Checks if threading is supported by the current PHP configuration
@@ -84,6 +92,7 @@ class Thread
      */
     public function __construct( $runnable = null )
     {
+        if(!Thread::isAvailable() )throw new Exception("Threads not supported");
         if ( $runnable !== null ) {
             $this->setRunnable($runnable);
         }
@@ -101,10 +110,7 @@ class Thread
         if ( self::isRunnableOk($runnable) ) {
             $this->runnable = $runnable;
         } else {
-            throw new Exception(
-                $this->getError(Thread::FUNCTION_NOT_CALLABLE),
-                Thread::FUNCTION_NOT_CALLABLE
-            );
+            $this->fatalError(Thread::FUNCTION_NOT_CALLABLE);
         }
     }
 
@@ -120,8 +126,7 @@ class Thread
 
     /**
      * Checks if the callback is ok (the function/method
-     * actually exists and is runnable from the current
-     * context)
+     * is runnable from the current context)
      *
      * can be called statically
      *
@@ -131,7 +136,7 @@ class Thread
      */
     public static function isRunnableOk( $runnable )
     {
-        return ( function_exists($runnable) && is_callable($runnable) );
+        return ( is_callable($runnable) );
     }
 
     /**
@@ -166,10 +171,7 @@ class Thread
     {
         $pid = @pcntl_fork();
         if ( $pid == -1 ) {
-            throw new Exception(
-                $this->getError(Thread::COULD_NOT_FORK),
-                Thread::COULD_NOT_FORK
-            );
+                $this->fatalError(Thread::COULD_NOT_FORK);
         }
         if ( $pid ) {
             // parent
@@ -252,4 +254,4 @@ class Thread
         }
     }
 }
-- See more at: http://blog.motane.lu/2009/01/02/multithreading-in-php/#sthash.JevFlLcL.dpuf
+
