@@ -8,5 +8,8 @@
       "name": "Tudor Barbu",
       "email": "miau@motane.lu"
     }
-  ]
+  ],
+  "autoload": {
+    "classmap": ["Thread.php", "ThreadQueue.php"]
+  }
 }
