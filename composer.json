@@ -1,0 +1,15 @@
+{
+  "name": "motanelu/php-thread",
+  "description": "Simple implementation of threading in PHP using pnctl",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Tudor Barbu",
+      "email": "miau@motane.lu"
+    }
+  ],
+  "autoload": {
+    "classmap": ["Thread.php", "ThreadQueue.php"]
+  }
+}
