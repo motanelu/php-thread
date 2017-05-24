@@ -7,7 +7,8 @@
   
   */
 
-require_once("Thread.php");
+namespace PHPThread;
+use PHPThread\Thread;
 
 class ThreadQueue {
   
@@ -28,7 +29,7 @@ class ThreadQueue {
   */
   
   public function __construct($callable, $queueSize = ThreadQueue::DEFAULT_QUEUE_SIZE ){
-    if(!is_callable($callable))throw new Exception("$callable is not callable.");
+    if(!is_callable($callable))throw new \Exception("$callable is not callable.");
     $this->callable = $callable;
     $this->queueSize = $queueSize;
   }

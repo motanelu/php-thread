@@ -23,6 +23,8 @@
  * @link      http://blog.motane.lu/2009/01/02/multithreading-in-php/
  */
 
+namespace PHPThread;
+
 class Thread
 {
     const FUNCTION_NOT_CALLABLE = 10;
@@ -61,7 +63,7 @@ class Thread
     */
     
     private function fatalError($errorCode){
-        throw new Exception( $this->getError($errorCode) );
+        throw new \Exception( $this->getError($errorCode) );
     }
 
     /**
@@ -92,7 +94,7 @@ class Thread
      */
     public function __construct( $runnable = null )
     {
-        if(!Thread::isAvailable() )throw new Exception("Threads not supported");
+        if(!Thread::isAvailable() )throw new \Exception("Threads not supported");
         if ( $runnable !== null ) {
             $this->setRunnable($runnable);
         }
