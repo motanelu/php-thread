@@ -23,7 +23,7 @@ class Thread
      *
      * @var array
      */
-    private $_errors = array(
+    private $errors = array(
         Thread::FUNCTION_NOT_CALLABLE => 'You must specify a valid function name that can be called from the current scope.',
         Thread::COULD_NOT_FORK        => 'pcntl_fork() returned a status of -1. No new process was created'
     );
@@ -41,7 +41,7 @@ class Thread
      *
      * @var integer
      */
-    private $_pid;
+    private $pid;
     
     
     /**
@@ -141,7 +141,7 @@ class Thread
      */
     public function getPid()
     {
-        return $this->_pid;
+        return $this->pid;
     }
 
     /**
@@ -151,7 +151,7 @@ class Thread
      */
     public function isAlive()
     {
-        $pid = pcntl_waitpid($this->_pid, $status, WNOHANG);
+        $pid = pcntl_waitpid($this->pid, $status, WNOHANG);
         
         return ($pid === 0);
     }
@@ -172,7 +172,7 @@ class Thread
         
         if ($pid) {
             // parent
-            $this->_pid = $pid;
+            $this->pid = $pid;
         } else {
             // child
             pcntl_signal(SIGTERM, array( $this, 'handleSignal' ));
@@ -200,9 +200,9 @@ class Thread
     public function stop($signal = SIGKILL, $wait = false)
     {
         if ($this->isAlive()) {
-            posix_kill($this->_pid, $signal);
+            posix_kill($this->pid, $signal);
             if ($wait) {
-                pcntl_waitpid($this->_pid, $status = 0);
+                pcntl_waitpid($this->pid, $status = 0);
             }
         }
     }
@@ -229,8 +229,8 @@ class Thread
      */
     public function getError($code)
     {
-        if (isset($this->_errors[$code])) {
-            return $this->_errors[$code];
+        if (isset($this->errors[$code])) {
+            return $this->errors[$code];
         } else {
             return "No such error code $code ! Quit inventing errors!!!";
         }
