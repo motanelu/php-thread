@@ -10,8 +10,8 @@
   ],
   "minimum-stability": "dev",
   "autoload": {
-    "psr-0": {
-            "PHPThread": "src/"
+    "psr-4": {
+            "PHPThread\\": "src/"
         }
   }
 }
