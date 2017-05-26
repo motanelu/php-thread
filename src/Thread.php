@@ -1,8 +1,7 @@
 <?php
+
 /**
- * Implements threading in PHP
- *
- * PHP version 5
+ * Thread class - Implements threading in PHP
  *
  * @category  Threading
  * @package   None
@@ -12,16 +11,7 @@
  * @link      http://blog.motane.lu/2009/01/02/multithreading-in-php/
  */
 
-/**
- * Thread class
- *
- * @category  Threading
- * @package   None
- * @author    Tudor Barbu <miau@motane.lu>
- * @copyright 2009 MIT
- * @license   http://en.wikipedia.org/wiki/MIT_License MIT License
- * @link      http://blog.motane.lu/2009/01/02/multithreading-in-php/
- */
+namespace PHPThread;
 
 class Thread
 {
@@ -33,7 +23,7 @@ class Thread
      *
      * @var array
      */
-    private $_errors = array(
+    private $errors = array(
         Thread::FUNCTION_NOT_CALLABLE => 'You must specify a valid function name that can be called from the current scope.',
         Thread::COULD_NOT_FORK        => 'pcntl_fork() returned a status of -1. No new process was created'
     );
@@ -51,7 +41,7 @@ class Thread
      *
      * @var integer
      */
-    private $_pid;
+    private $pid;
     
     
     /**
@@ -60,8 +50,9 @@ class Thread
      * @return void
     */
     
-    private function fatalError($errorCode){
-        throw new Exception( $this->getError($errorCode) );
+    private function fatalError($errorCode)
+    {
+        throw new \Exception($this->getError($errorCode));
     }
 
     /**
@@ -75,8 +66,8 @@ class Thread
             'pcntl_fork',
         );
 
-        foreach ( $required_functions as $function ) {
-            if ( !function_exists($function) ) {
+        foreach ($required_functions as $function) {
+            if (!function_exists($function)) {
                 return false;
             }
         }
@@ -85,15 +76,19 @@ class Thread
     }
 
     /**
-     * Class constructor - you can pass
-     * the callback function as an argument
+     * Instantiate a new Thread.
+     *
+     * Callback function can be passed as argument to the constructor.
      *
      * @param callback $runnable Callback reference
      */
-    public function __construct( $runnable = null )
+    public function __construct($runnable = null)
     {
-        if(!Thread::isAvailable() )throw new Exception("Threads not supported");
-        if ( $runnable !== null ) {
+        if (!Thread::isAvailable()) {
+            throw new \Exception("Threads not supported");
+        }
+        
+        if ($runnable !== null) {
             $this->setRunnable($runnable);
         }
     }
@@ -105,9 +100,9 @@ class Thread
      *
      * @return callback
      */
-    public function setRunnable( $runnable )
+    public function setRunnable($runnable)
     {
-        if ( self::isRunnableOk($runnable) ) {
+        if (self::isRunnableOk($runnable)) {
             $this->runnable = $runnable;
         } else {
             $this->fatalError(Thread::FUNCTION_NOT_CALLABLE);
@@ -134,9 +129,9 @@ class Thread
      *
      * @return boolean
      */
-    public static function isRunnableOk( $runnable )
+    public static function isRunnableOk($runnable)
     {
-        return ( is_callable($runnable) );
+        return (is_callable($runnable));
     }
 
     /**
@@ -146,7 +141,7 @@ class Thread
      */
     public function getPid()
     {
-        return $this->_pid;
+        return $this->pid;
     }
 
     /**
@@ -156,9 +151,9 @@ class Thread
      */
     public function isAlive()
     {
-        $pid = pcntl_waitpid($this->_pid, $status, WNOHANG);
-        return ( $pid === 0 );
-
+        $pid = pcntl_waitpid($this->pid, $status, WNOHANG);
+        
+        return ($pid === 0);
     }
 
     /**
@@ -170,23 +165,26 @@ class Thread
     public function start()
     {
         $pid = @pcntl_fork();
-        if ( $pid == -1 ) {
-                $this->fatalError(Thread::COULD_NOT_FORK);
+        
+        if ($pid == -1) {
+            $this->fatalError(Thread::COULD_NOT_FORK);
         }
-        if ( $pid ) {
+        
+        if ($pid) {
             // parent
-            $this->_pid = $pid;
+            $this->pid = $pid;
         } else {
             // child
             pcntl_signal(SIGTERM, array( $this, 'handleSignal' ));
             $arguments = func_get_args();
-            if ( !empty($arguments) ) {
+            
+            if (!empty($arguments)) {
                 call_user_func_array($this->runnable, $arguments);
             } else {
                 call_user_func($this->runnable);
             }
-
-            exit( 0 );
+            
+            exit(0);
         }
     }
 
@@ -199,12 +197,12 @@ class Thread
      *
      * @return void
      */
-    public function stop( $signal = SIGKILL, $wait = false )
+    public function stop($signal = SIGKILL, $wait = false)
     {
-        if ( $this->isAlive() ) {
-            posix_kill($this->_pid, $signal);
-            if ( $wait ) {
-                pcntl_waitpid($this->_pid, $status = 0);
+        if ($this->isAlive()) {
+            posix_kill($this->pid, $signal);
+            if ($wait) {
+                pcntl_waitpid($this->pid, $status = 0);
             }
         }
     }
@@ -217,7 +215,7 @@ class Thread
      *
      * @return void
      */
-    public function kill( $signal = SIGKILL, $wait = false )
+    public function kill($signal = SIGKILL, $wait = false)
     {
         return $this->stop($signal, $wait);
     }
@@ -229,10 +227,10 @@ class Thread
      *
      * @return string
      */
-    public function getError( $code )
+    public function getError($code)
     {
-        if ( isset( $this->_errors[$code] ) ) {
-            return $this->_errors[$code];
+        if (isset($this->errors[$code])) {
+            return $this->errors[$code];
         } else {
             return "No such error code $code ! Quit inventing errors!!!";
         }
@@ -245,13 +243,12 @@ class Thread
      *
      * @return void
      */
-    protected function handleSignal( $signal )
+    protected function handleSignal($signal)
     {
-        switch( $signal ) {
-        case SIGTERM:
-            exit( 0 );
-            break;
+        switch ($signal) {
+            case SIGTERM:
+                exit(0);
+                break;
         }
     }
 }
-
